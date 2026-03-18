@@ -3,7 +3,9 @@ import {
     criarResgate,
     listarResgates,
     buscarResgate,
-    validarResgate
+    listarResgatesPorRestaurante,
+    listarResgatesAtivos,
+    validarResgatePorToken
 } from "../controllers/resgatesController.js"
 
 const router = express.Router()
@@ -11,6 +13,8 @@ const router = express.Router()
 router.post("/", criarResgate)
 router.get("/", listarResgates)
 router.get("/:id", buscarResgate)
-router.put("/validar/:token", validarResgate)
+router.get("/restaurante/:restaurante_id", listarResgatesPorRestaurante);
+router.get("/ativos", listarResgatesAtivos);
+router.get("/validar/:token", validarResgatePorToken);
 
 export default router
