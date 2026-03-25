@@ -1,9 +1,9 @@
 import pool from "../config/db.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const login = async (req, res) => {
     try {
-
         const { email, senha } = req.body;
 
         if (!email || !senha) {
@@ -27,16 +27,30 @@ export const login = async (req, res) => {
             return res.status(401).json({ erro: "Senha inválida" });
         }
 
-        res.json({
-            id: user.id,
-            nome: user.nome,
-            email: user.email,
-            tipo: user.tipo,
-            cidade_id: user.cidade_id
+
+        const token = jwt.sign(
+            {
+                id: user.id,
+                tipo_usuario: user.tipo,
+                cidade_id: user.cidade_id
+            },
+            "segredo", // depois colocar .env
+            { expiresIn: "1d" }
+        );
+
+        return res.json({
+            token,
+            user: {
+                id: user.id,
+                nome: user.nome,
+                email: user.email,
+                tipo_usuario: user.tipo,
+                cidade_id: user.cidade_id
+            }
         });
 
     } catch (erro) {
         console.error("Erro no login:", erro);
-        res.status(500).json({ erro: "Erro interno do servidor" });
+        return res.status(500).json({ erro: "Erro interno do servidor" });
     }
 };

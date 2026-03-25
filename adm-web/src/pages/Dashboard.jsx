@@ -9,6 +9,7 @@ export default function Dashboard() {
     async function load() {
         try {
             const res = await getDashboard();
+            console.log(res); 
             setDados(res);
         } catch {
             toast.error("Erro ao carregar dashboard");
@@ -21,7 +22,7 @@ export default function Dashboard() {
         load();
     }, []);
 
-    if (loading) {
+    if (loading || !dados) {
         return <p className="text-muted">Carregando dashboard...</p>;
     }
 

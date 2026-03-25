@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 export default function Cities() {
     const [cities, setCities] = useState([]);
     const [name, setName] = useState("");
+    const [estado, setEstado] = useState("");
     const [editing, setEditing] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -23,17 +24,25 @@ export default function Cities() {
 
         try {
             if (editing) {
-                await api.put(`/cidades/${editing.id}`, { nome: name });
+                await api.put(`/cidades/${editing.id}`, {
+                    nome: name,
+                    estado
+                });
                 toast.success("Cidade atualizada");
             } else {
-                await api.post("/cidades", { nome: name });
+                await api.post("/cidades", {
+                    nome: name,
+                    estado
+                });
                 toast.success("Cidade criada");
             }
 
             setName("");
+            setEstado("");
             setEditing(null);
             await load();
-        } catch {
+        } catch (err) {
+            console.log(err.response?.data);
             toast.error("Erro ao salvar cidade");
         } finally {
             setLoading(false);
@@ -56,11 +65,13 @@ export default function Cities() {
     function startEdit(city) {
         setEditing(city);
         setName(city.nome);
+        setEstado(city.estado);
     }
 
     function cancelEdit() {
         setEditing(null);
         setName("");
+        setEstado("");
     }
 
     useEffect(() => {
@@ -75,8 +86,15 @@ export default function Cities() {
                 <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="City name"
+                    placeholder="Nome da cidade"
                     className="p-2 rounded bg-card flex-1"
+                />
+
+                <input
+                    value={estado}
+                    onChange={(e) => setEstado(e.target.value)}
+                    placeholder="Estado (ex: PR)"
+                    className="p-2 rounded bg-card w-32"
                 />
 
                 <button
@@ -86,8 +104,8 @@ export default function Cities() {
                     {loading
                         ? "Salvando..."
                         : editing
-                        ? "Update"
-                        : "Create"}
+                        ? "Atualizar"
+                        : "Criar"}
                 </button>
 
                 {editing && (
@@ -96,7 +114,7 @@ export default function Cities() {
                         onClick={cancelEdit}
                         className="px-4 rounded bg-muted"
                     >
-                        Cancel
+                        Cancelar
                     </button>
                 )}
             </form>
@@ -111,21 +129,23 @@ export default function Cities() {
                         key={c.id}
                         className="flex justify-between items-center border-b border-muted py-2"
                     >
-                        <span>{c.nome}</span>
+                        <span>
+                            {c.nome} - {c.estado}
+                        </span>
 
                         <div className="flex gap-3">
                             <button
                                 onClick={() => startEdit(c)}
                                 className="text-blue-400"
                             >
-                                Edit
+                                Editar
                             </button>
 
                             <button
                                 onClick={() => remove(c.id)}
                                 className="text-danger"
                             >
-                                Delete
+                                Deletar
                             </button>
                         </div>
                     </div>

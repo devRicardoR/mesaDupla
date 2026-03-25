@@ -18,11 +18,12 @@ export default function Login() {
                 email,
                 senha,
             });
+            console.log(res.data);
 
-            const { token, usuario } = res.data;
+            const { token, user } = res.data;
 
             localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(usuario));
+            localStorage.setItem("user", JSON.stringify(user));
 
             toast.success("Login realizado");
             navigate("/");
